@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>{{p.name}}</title>
+  <style>
+    body{font-family:Segoe UI,Arial;margin:24px;max-width:980px;}
+    .card{border:1px solid #ddd;border-radius:10px;padding:14px;margin-bottom:14px;}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;margin-bottom:10px;}
+    textarea{min-height:120px;}
+    .row{display:grid;grid-template-columns: 1fr 1fr;gap:12px;}
+    .muted{color:#666;font-size:12px;}
+    a{color:#0b57d0;text-decoration:none;}
+    button{padding:9px 12px;border-radius:9px;border:1px solid #ccc;cursor:pointer;}
+    .item{padding:10px;border-top:1px solid #eee;}
+  </style>
+</head>
+<body>
+  <p><a href="/">← Back</a></p>
+  <h1>{{p.name}}</h1>
+
+  <div class="card">
+    <h3>Edit Project</h3>
+    <form method="post" action="/project/{{p.id}}/edit">
+      <label>Description</label>
+      <textarea name="description">{{p.description or ""}}</textarea>
+
+      <div class="row">
+        <div>
+          <label>Projected completion date</label>
+          <input type="date" name="due_date" value="{{p.due_date or ''}}"/>
+        </div>
+        <div>
+          <label>Priority</label>
+          <select name="priority">
+            {% for x in priorities %}
+              <option value="{{x}}" {% if x==p.priority %}selected{% endif %}>{{x}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <label>Status</label>
+      <select name="status">
+        {% for x in statuses %}
+          <option value="{{x}}" {% if x==p.status %}selected{% endif %}>{{x}}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit">Save</button>
+      <p class="muted">Created: {{p.created_at}} • Updated: {{p.updated_at}}</p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Add Update (timestamped)</h3>
+    <form method="post" action="/project/{{p.id}}/update">
+      <textarea name="message" required placeholder="What changed? Next steps? Notes?"></textarea>
+      <button type="submit">Post update</button>
+    </form>
+
+    <h4>Update History</h4>
+    {% for u in updates %}
+      <div class="item">
+        <div class="muted">{{u.created_at}}</div>
+        <div>{{u.message}}</div>
+      </div>
+    {% else %}
+      <p class="muted">No updates yet.</p>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h3>Attachments</h3>
+    <form method="post" action="/project/{{p.id}}/attach" enctype="multipart/form-data">
+      <label>Add a link (Google Sheet, doc, etc.)</label>
+      <input name="link_url" placeholder="https://docs.google.com/..." />
+
+      <label>Or upload a file</label>
+      <input type="file" name="file" />
+
+      <button type="submit">Add attachment</button>
+    </form>
+
+    <h4>Files & Links</h4>
+    {% for a in attachments %}
+      <div class="item">
+        <div class="muted">{{a.uploaded_at}}</div>
+        <div><a href="{{a.url}}" target="_blank">{{a.filename}}</a></div>
+      </div>
+    {% else %}
+      <p class="muted">No attachments yet.</p>
+    {% endfor %}
+  </div>
+</body>
+</html>

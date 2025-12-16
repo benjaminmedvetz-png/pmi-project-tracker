@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Hello World",
+			"type": "shell",
+			"command": "& \"C:/Users/BenMedvetz/PMI Project/.venv/Scripts/python.exe\"",
+			"args": [
+				"hello.py"
+			],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}
